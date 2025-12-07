@@ -11,9 +11,9 @@ from ..schemas.models import VisionAnalysis
 class VisionAgentGemini:
     """Analyze screenshots using Google Gemini Vision (FREE tier: 15 req/min)"""
     
-    def __init__(self, api_key: str, model: str = "gemini-pro-vision"):
+    def __init__(self, api_key: str, model: str = "gemini-2.0-flash-exp"):
         self.api_key = api_key
-        self.model_name = "gemini-pro-vision"  # Correct model name
+        self.model_name = model
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel(self.model_name)
         logger.info(f"Initialized Gemini Vision Agent with model: {self.model_name}")
