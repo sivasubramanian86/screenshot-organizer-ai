@@ -13,13 +13,14 @@ class VisionAgentGemini:
     
     def __init__(self, api_key: str, model: str = "gemini-1.5-flash"):
         self.api_key = api_key
-        self.model_name = model
+        self.model_name = "gemini-1.5-flash-latest"  # Use latest version
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model)
-        logger.info(f"Initialized Gemini Vision Agent with model: {model}")
+        self.model = genai.GenerativeModel(self.model_name)
+        logger.info(f"Initialized Gemini Vision Agent with model: {self.model_name}")
     
-    def analyze_image(self, image_path: Path, ocr_text: Optional[str] = None, max_retries: int = 3) -> VisionAnalysis:
+    def analyze_image(self, image_path: Path, ocr_text: Optional[str] = None) -> VisionAnalysis:
         """Analyze screenshot with Gemini Vision API"""
+        max_retries = 3
         for attempt in range(max_retries):
             try:
                 with open(image_path, "rb") as f:
