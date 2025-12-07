@@ -1,0 +1,70 @@
+# Screenshot Organizer Configuration
+
+# Paths
+source_folders:
+  windows: 'C:\Users\{USERNAME}\Pictures\Screenshots'
+  mac: '~/Pictures/Screenshots'
+  linux: '~/Pictures'
+output_base: './organized_screenshots'
+
+# Processing
+dry_run: false  # Don't actually move files if true
+recursive: false  # Process subfolders?
+exclude_patterns:
+  - '*.tmp'
+  - '*cache*'
+  - '.DS_Store'
+  - 'Thumbs.db'
+
+# Monitoring settings
+monitoring:
+  file_extensions:
+    - .png
+    - .jpg
+    - .jpeg
+    - .webp
+    - .bmp
+    - .gif
+  file_completion_wait_seconds: 1
+  poll_interval_seconds: 1
+
+# AI Settings
+ocr:
+  enabled: true
+  language: 'eng'
+  cache_dir: './data/ocr_cache'
+
+claude_vision:
+  model: 'claude-3-5-sonnet-20241022'
+  max_tokens: 1000
+  timeout_seconds: 60
+  max_retries: 3
+
+# Processing
+processing:
+  min_confidence: 0.6  # Only auto-organize if >= this
+  parallel_processing: false
+  max_retries: 3
+  timeout_seconds: 60
+  max_image_size_mb: 50
+  thumbnail_size: [150, 150]
+
+# Organization
+organization:
+  max_filename_length: 200
+  preserve_original: false
+
+# Database
+database:
+  path: './data/screenshots.db'
+  auto_backup: true
+  backup_dir: './data/backups'
+  enable_thumbnails: true
+
+# Logging
+logging:
+  level: 'INFO'  # DEBUG, INFO, WARNING, ERROR
+  file: './logs/organizer.log'
+  max_size_mb: 10
+  backup_count: 5
+  console: true

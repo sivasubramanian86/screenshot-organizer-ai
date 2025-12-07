@@ -1,0 +1,32 @@
+# Core Dependencies
+watchdog==4.0.0
+Pillow==10.2.0
+pytesseract==0.3.10
+anthropic==0.18.1
+pyyaml==6.0.1
+
+# Data & Validation
+pydantic==2.6.1
+pydantic-settings==2.1.0
+
+# Database
+aiosqlite==0.19.0
+
+# Utilities
+python-dotenv==1.0.1
+pathlib2==2.3.7; sys_platform == 'win32'
+
+# Development & Testing
+pytest==8.0.0
+pytest-asyncio==0.23.4
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Code Quality
+black==24.1.1
+ruff==0.2.1
+mypy==1.8.0
+types-PyYAML==6.0.12.12
+
+# Logging
+loguru==0.7.2

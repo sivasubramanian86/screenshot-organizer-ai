@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables (IMPORTANT: Never commit API keys!)
+config/.env
+.env
+
+# Database
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# Logs
+logs/*.log
+*.log
+
+# Cache
+data/ocr_cache/
+*.cache
+
+# Thumbnails
+data/thumbnails/
+
+# Checkpoints
+data/checkpoint.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.temp
+~*
+
+# Screenshots (don't commit actual screenshots)
+organized_screenshots/
+screenshots/
