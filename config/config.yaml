@@ -42,7 +42,7 @@ claude_vision:
 
 # Processing
 processing:
-  min_confidence: 0.6  # Only auto-organize if >= this
+  min_confidence: 0.3  # Only auto-organize if >= this
   parallel_processing: false
   max_retries: 3
   timeout_seconds: 60

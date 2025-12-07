@@ -11,7 +11,7 @@ from ..schemas.models import VisionAnalysis
 class VisionAgentGemini:
     """Analyze screenshots using Google Gemini Vision (FREE tier: 15 req/min)"""
     
-    def __init__(self, api_key: str, model: str = "gemini-2.0-flash-exp"):
+    def __init__(self, api_key: str, model: str = "gemini-2.5-flash"):
         self.api_key = api_key
         self.model_name = model
         genai.configure(api_key=api_key)
@@ -40,7 +40,11 @@ Format as JSON:
   "purpose": "likely user intent"
 }"""
                 
-                response = self.model.generate_content([prompt, {"mime_type": "image/png", "data": image_data}])
+                # Use PIL to load image for Gemini
+                from PIL import Image
+                import io
+                img = Image.open(io.BytesIO(image_data))
+                response = self.model.generate_content([prompt, img])
                 
                 # Parse response
                 text = response.text.strip()

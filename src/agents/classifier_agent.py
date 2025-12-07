@@ -257,32 +257,55 @@ class ClassifierAgent:
         return None
     
     def _fallback_classification(self, ocr_text: str, vision_desc: str) -> ClassificationResult:
-        """Fallback classification when API fails."""
-        # Simple rule-based classification
+        """Enhanced rule-based classification using OCR and vision."""
         text = (ocr_text + " " + vision_desc).lower()
         
         category = "OTHER"
         keywords = []
-        confidence = 0.3
+        confidence = 0.5
+        
+        # Extract meaningful keywords from text
+        import re
+        words = re.findall(r'\b[a-z]{3,}\b', text)
+        common_words = {'the', 'and', 'for', 'with', 'this', 'that', 'from', 'have', 'been', 'will'}
+        keywords = [w.title() for w in words if w not in common_words][:10]
         
         # Error detection
-        if any(word in text for word in ["error", "exception", "failed", "timeout", "404", "500"]):
+        if any(word in text for word in ['error', 'exception', 'failed', 'timeout', '404', '500', 'traceback', 'stack']):
             category = "ERROR"
-            keywords = ["error", "exception"]
-            confidence = 0.5
+            confidence = 0.7
         
         # Code detection
-        elif any(word in text for word in ["def ", "function", "import", "class ", "async", "const "]):
+        elif any(word in text for word in ['def ', 'function', 'import', 'class ', 'async', 'const ', 'var ', 'let ', 'return', 'python', 'javascript', 'code']):
             category = "CODE"
-            keywords = ["code", "programming"]
-            confidence = 0.5
+            confidence = 0.7
+        
+        # UI detection
+        elif any(word in text for word in ['button', 'login', 'signup', 'dashboard', 'menu', 'form', 'input', 'click']):
+            category = "UI"
+            confidence = 0.6
+        
+        # Documentation detection
+        elif any(word in text for word in ['documentation', 'readme', 'guide', 'tutorial', 'docs', 'api', 'reference']):
+            category = "DOCUMENTATION"
+            confidence = 0.6
+        
+        # Data detection
+        elif any(word in text for word in ['chart', 'graph', 'table', 'data', 'report', 'analytics', 'statistics']):
+            category = "DATA"
+            confidence = 0.6
+        
+        # Communication detection
+        elif any(word in text for word in ['slack', 'email', 'message', 'chat', 'conversation', 'reply']):
+            category = "COMMUNICATION"
+            confidence = 0.6
         
         folder = self._suggest_folder(category, keywords)
         
         return ClassificationResult(
             category=category,
-            keywords=keywords,
+            keywords=keywords[:5],
             suggested_folder=folder,
             confidence=confidence,
-            tags=keywords
+            tags=keywords[:5]
         )
