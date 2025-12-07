@@ -72,7 +72,7 @@ class ScreenshotOrganizer:
                 api_key = os.getenv("GEMINI_API_KEY")
                 if not api_key:
                     raise ValueError("GEMINI_API_KEY not found in environment")
-                model = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+                model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
                 self.vision = VisionAgentGemini(api_key=api_key, model=model)
                 logger.info(f"Using Google Gemini: {model}")
             
