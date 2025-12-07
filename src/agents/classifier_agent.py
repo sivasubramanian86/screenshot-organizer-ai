@@ -55,17 +55,22 @@ class ClassifierAgent:
         self,
         api_key: Optional[str] = None,
         model: str = "claude-3-5-sonnet-20241022",
-        max_tokens: int = 500
+        max_tokens: int = 500,
+        use_api: bool = True
     ):
-        self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
-        if not self.api_key:
-            raise ValueError(
-                "Claude API key not found. Set ANTHROPIC_API_KEY environment variable."
-            )
-        
+        self.use_api = use_api
         self.model = model
         self.max_tokens = max_tokens
-        self.client = anthropic.Anthropic(api_key=self.api_key)
+        
+        if use_api:
+            self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+            if not self.api_key:
+                logger.warning("Claude API key not found, using rule-based classification")
+                self.use_api = False
+            else:
+                self.client = anthropic.Anthropic(api_key=self.api_key)
+        else:
+            self.client = None
     
     def classify(
         self,
@@ -94,19 +99,21 @@ class ClassifierAgent:
         )
         
         try:
-            # Call Claude API
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=self.max_tokens,
-                messages=[{
-                    "role": "user",
-                    "content": prompt
-                }]
-            )
-            
-            # Parse response
-            content = response.content[0].text
-            result = self._parse_response(content)
+            # Use API or fallback to rule-based
+            if self.use_api and self.client:
+                response = self.client.messages.create(
+                    model=self.model,
+                    max_tokens=self.max_tokens,
+                    messages=[{
+                        "role": "user",
+                        "content": prompt
+                    }]
+                )
+                content = response.content[0].text
+                result = self._parse_response(content)
+            else:
+                # Use rule-based classification
+                return self._fallback_classification(ocr_text, vision_desc)
             
             # Generate folder suggestion
             folder = self._suggest_folder(result["category"], result["keywords"])

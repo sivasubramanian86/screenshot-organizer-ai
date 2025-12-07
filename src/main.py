@@ -93,9 +93,12 @@ class ScreenshotOrganizer:
                 )
                 logger.info(f"Using Claude Direct: {self.config.claude_vision.model}")
             
+            # Classifier uses rule-based approach when not using Claude
+            use_claude_classifier = vision_provider == "claude"
             self.classifier = ClassifierAgent(
                 model=self.config.claude_vision.model,
-                max_tokens=500
+                max_tokens=500,
+                use_api=use_claude_classifier
             )
             
             self.organizer = OrganizerAgent(

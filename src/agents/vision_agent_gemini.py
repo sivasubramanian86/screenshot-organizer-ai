@@ -18,7 +18,7 @@ class VisionAgentGemini:
         self.model = genai.GenerativeModel(model)
         logger.info(f"Initialized Gemini Vision Agent with model: {model}")
     
-    def analyze_image(self, image_path: Path, max_retries: int = 3) -> Optional[VisionAnalysis]:
+    def analyze_image(self, image_path: Path, ocr_text: Optional[str] = None, max_retries: int = 3) -> VisionAnalysis:
         """Analyze screenshot with Gemini Vision API"""
         for attempt in range(max_retries):
             try:
@@ -49,12 +49,15 @@ Format as JSON:
                 import json
                 data = json.loads(text)
                 
+                # Map to VisionAnalysis format
+                description = data.get("main_subject", "") + ". " + data.get("purpose", "")
                 return VisionAnalysis(
-                    main_subject=data.get("main_subject", ""),
-                    context=data.get("context", ""),
-                    key_elements=data.get("key_elements", []),
-                    purpose=data.get("purpose", ""),
-                    confidence=0.9
+                    description=description,
+                    content_type="other",
+                    objects_detected=data.get("key_elements", []),
+                    keywords=data.get("key_elements", [])[:10],
+                    has_text=bool(ocr_text),
+                    confidence=0.85
                 )
                 
             except Exception as e:
@@ -63,6 +66,21 @@ Format as JSON:
                     time.sleep(2 ** attempt)
                 else:
                     logger.error(f"All Gemini API attempts failed for {image_path}")
-                    return None
+                    # Return fallback
+                    return VisionAnalysis(
+                        description="Screenshot analysis unavailable",
+                        content_type="other",
+                        objects_detected=[],
+                        keywords=[],
+                        has_text=bool(ocr_text),
+                        confidence=0.3
+                    )
         
-        return None
+        return VisionAnalysis(
+            description="Screenshot analysis unavailable",
+            content_type="other",
+            objects_detected=[],
+            keywords=[],
+            has_text=bool(ocr_text),
+            confidence=0.3
+        )
