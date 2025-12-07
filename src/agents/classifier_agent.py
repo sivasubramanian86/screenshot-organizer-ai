@@ -267,38 +267,45 @@ class ClassifierAgent:
         # Extract meaningful keywords from text
         import re
         words = re.findall(r'\b[a-z]{3,}\b', text)
-        common_words = {'the', 'and', 'for', 'with', 'this', 'that', 'from', 'have', 'been', 'will'}
+        common_words = {'the', 'and', 'for', 'with', 'this', 'that', 'from', 'have', 'been', 'will', 'are', 'was', 'were'}
         keywords = [w.title() for w in words if w not in common_words][:10]
         
-        # Error detection
-        if any(word in text for word in ['error', 'exception', 'failed', 'timeout', '404', '500', 'traceback', 'stack']):
+        # Enhanced keyword-based detection
+        # Error detection (highest priority)
+        if any(word in text for word in ['error', 'exception', 'failed', 'failure', 'timeout', '404', '500', '503', 'traceback', 'stack trace', 'fatal', 'crash']):
             category = "ERROR"
-            confidence = 0.7
+            confidence = 0.8
         
-        # Code detection
-        elif any(word in text for word in ['def ', 'function', 'import', 'class ', 'async', 'const ', 'var ', 'let ', 'return', 'python', 'javascript', 'code']):
+        # Code/Programming detection
+        elif any(word in text for word in ['def ', 'function', 'import', 'class ', 'async', 'const ', 'var ', 'let ', 'return', 'python', 'javascript', 'java', 'c++', 'c#', 'html', 'css', 'sql', 'api', 'variable', 'typescript', 'react', 'node', 'npm', 'git', 'github']):
             category = "CODE"
-            confidence = 0.7
+            confidence = 0.75
+        
+        # AI/ML detection (new category mapped to CODE)
+        elif any(word in text for word in ['artificial intelligence', 'machine learning', 'deep learning', 'neural network', 'chatgpt', 'openai', 'copilot', 'llm', 'gpt', 'claude', 'gemini', 'ai model']):
+            category = "CODE"
+            keywords.insert(0, "AI")
+            confidence = 0.75
         
         # UI detection
-        elif any(word in text for word in ['button', 'login', 'signup', 'dashboard', 'menu', 'form', 'input', 'click']):
+        elif any(word in text for word in ['button', 'login', 'signup', 'sign up', 'sign in', 'dashboard', 'menu', 'form', 'input', 'click', 'interface', 'ui', 'ux', 'design', 'mockup']):
             category = "UI"
-            confidence = 0.6
+            confidence = 0.7
         
         # Documentation detection
-        elif any(word in text for word in ['documentation', 'readme', 'guide', 'tutorial', 'docs', 'api', 'reference']):
+        elif any(word in text for word in ['documentation', 'readme', 'guide', 'tutorial', 'docs', 'api reference', 'manual', 'instructions', 'how to']):
             category = "DOCUMENTATION"
-            confidence = 0.6
+            confidence = 0.7
         
-        # Data detection
-        elif any(word in text for word in ['chart', 'graph', 'table', 'data', 'report', 'analytics', 'statistics']):
+        # Data/Finance detection
+        elif any(word in text for word in ['chart', 'graph', 'table', 'data', 'report', 'analytics', 'statistics', 'stock', 'portfolio', 'investment', 'nifty', 'sensex', 'mutual fund', 'ipo', 'finance', 'invoice', 'bill', 'payment']):
             category = "DATA"
-            confidence = 0.6
+            confidence = 0.7
         
         # Communication detection
-        elif any(word in text for word in ['slack', 'email', 'message', 'chat', 'conversation', 'reply']):
+        elif any(word in text for word in ['slack', 'email', 'gmail', 'outlook', 'message', 'chat', 'whatsapp', 'telegram', 'conversation', 'reply', 'meeting', 'zoom', 'teams']):
             category = "COMMUNICATION"
-            confidence = 0.6
+            confidence = 0.7
         
         folder = self._suggest_folder(category, keywords)
         
