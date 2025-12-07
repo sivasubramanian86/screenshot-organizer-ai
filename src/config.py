@@ -5,6 +5,10 @@ from typing import List, Dict, Optional
 import yaml
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv(Path("config/.env"))
 
 
 class SourceFolders(BaseModel):

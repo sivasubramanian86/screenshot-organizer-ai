@@ -354,6 +354,11 @@ def main() -> None:
         type=str,
         help="Search indexed screenshots"
     )
+    parser.add_argument(
+        "--process-existing",
+        action="store_true",
+        help="Process existing screenshots in folder before monitoring"
+    )
     
     args = parser.parse_args()
     
@@ -406,7 +411,30 @@ def main() -> None:
     # Run organizer
     try:
         organizer = ScreenshotOrganizer(config)
-        organizer.run()
+        
+        # Process existing files if requested
+        if args.process_existing:
+            logger.info("Processing existing screenshots...")
+            source_folder = organizer.monitor.folder_path
+            extensions = config.monitoring.file_extensions
+            
+            existing_files = []
+            for ext in extensions:
+                existing_files.extend(source_folder.glob(f"*{ext}"))
+            
+            logger.info(f"Found {len(existing_files)} existing screenshots")
+            
+            for file_path in existing_files:
+                organizer.process_screenshot(file_path)
+            
+            organizer._print_progress()
+            logger.info("Finished processing existing screenshots")
+            
+            if not args.dry_run:
+                logger.info("Starting monitoring for new screenshots...")
+                organizer.run()
+        else:
+            organizer.run()
     except KeyboardInterrupt:
         logger.info("Interrupted by user")
     except Exception as e:
