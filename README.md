@@ -6,7 +6,7 @@ Automatically organize, rename, and index screenshots using OCR and Claude Visio
 
 - **Automatic Monitoring**: Watch screenshot folders for new files (Windows & Mac)
 - **OCR Text Extraction**: Extract text using Tesseract
-- **AI Vision Analysis**: Analyze image content with Claude Vision API
+- **AI Vision Analysis**: Analyze image content with Claude, Gemini (FREE), or AWS Bedrock
 - **Smart Classification**: Categorize into ERROR, CODE, UI, DOCUMENTATION, DATA, COMMUNICATION, OTHER
 - **Intelligent Organization**: Rename and move files to organized folders
 - **Searchable Database**: SQLite with full-text search
@@ -40,8 +40,21 @@ python --version  # Should be 3.11 or higher
 brew install tesseract
 ```
 
-### 3. Claude API Key
-Get your API key from: https://console.anthropic.com/
+### 3. Vision API (Choose One)
+
+**Option 1: Google Gemini (FREE - Recommended)**
+- Get FREE API key: https://makersuite.google.com/app/apikey
+- No credit card required
+- 1500 requests/day free
+
+**Option 2: AWS Bedrock (Pay-per-use)**
+- No minimum charge (unlike Claude direct)
+- ~$2 per 1000 screenshots
+- Requires AWS account
+
+**Option 3: Claude Direct**
+- $5 minimum charge + usage
+- Get key: https://console.anthropic.com/
 
 ## Installation
 
@@ -62,18 +75,42 @@ source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
+
+**For Gemini (FREE):**
+```bash
+pip install -r requirements_gemini.txt
+# Or run: setup_gemini.bat
+```
+
+**For AWS Bedrock:**
+```bash
+pip install -r requirements_bedrock.txt
+# Or run: setup_bedrock.bat
+```
+
+**For Claude Direct:**
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Configure Environment
-```bash
-# Copy example env file
-copy config\.env.example config\.env  # Windows
-cp config/.env.example config/.env    # Mac/Linux
 
-# Edit config/.env and add your Claude API key
-ANTHROPIC_API_KEY=your_actual_api_key_here
+**For Gemini:**
+```bash
+copy config\.env.gemini config\.env
+# Edit and add: GEMINI_API_KEY=your_key
+```
+
+**For AWS Bedrock:**
+```bash
+aws configure  # Setup AWS credentials
+copy config\.env.bedrock config\.env
+```
+
+**For Claude:**
+```bash
+copy config\.env.example config\.env
+# Edit and add: ANTHROPIC_API_KEY=your_key
 ```
 
 ### 5. Initialize Database

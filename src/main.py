@@ -11,9 +11,9 @@ from loguru import logger
 from .config import load_config, Config
 from .utils.logger import setup_logging
 from .utils.platform_utils import get_os_type, get_screenshot_folder
+import os
 from .agents.monitor_agent import MonitorAgent
 from .agents.ocr_agent import OCRAgent
-from .agents.vision_agent import VisionAgent
 from .agents.classifier_agent import ClassifierAgent
 from .agents.organizer_agent import OrganizerAgent
 from .agents.indexer_agent import IndexerAgent
@@ -64,12 +64,34 @@ class ScreenshotOrganizer:
                 cache_dir=Path(self.config.ocr.cache_dir)
             ) if self.config.ocr.enabled else None
             
-            self.vision = VisionAgent(
-                model=self.config.claude_vision.model,
-                max_tokens=self.config.claude_vision.max_tokens,
-                timeout=self.config.claude_vision.timeout_seconds,
-                max_retries=self.config.claude_vision.max_retries
-            )
+            # Auto-detect vision provider from environment
+            vision_provider = os.getenv("VISION_PROVIDER", "claude").lower()
+            
+            if vision_provider == "gemini":
+                from .agents.vision_agent_gemini import VisionAgentGemini
+                api_key = os.getenv("GEMINI_API_KEY")
+                if not api_key:
+                    raise ValueError("GEMINI_API_KEY not found in environment")
+                model = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+                self.vision = VisionAgentGemini(api_key=api_key, model=model)
+                logger.info(f"Using Google Gemini: {model}")
+            
+            elif vision_provider == "bedrock":
+                from .agents.vision_agent_bedrock import VisionAgentBedrock
+                region = os.getenv("AWS_REGION", "us-east-1")
+                model_id = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
+                self.vision = VisionAgentBedrock(region=region, model_id=model_id)
+                logger.info(f"Using AWS Bedrock: {model_id}")
+            
+            else:  # claude (default)
+                from .agents.vision_agent import VisionAgent
+                self.vision = VisionAgent(
+                    model=self.config.claude_vision.model,
+                    max_tokens=self.config.claude_vision.max_tokens,
+                    timeout=self.config.claude_vision.timeout_seconds,
+                    max_retries=self.config.claude_vision.max_retries
+                )
+                logger.info(f"Using Claude Direct: {self.config.claude_vision.model}")
             
             self.classifier = ClassifierAgent(
                 model=self.config.claude_vision.model,
