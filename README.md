@@ -1,3 +1,8 @@
+> [!NOTE]
+> **OFFICIAL PORTFOLIO SHOWCASE BY SIVASUBRAMANIAN**  
+> **Original Author:** [Sivasubramanian](https://github.com/sivasubramanian86)  
+> *This repository is an open portfolio showcase. Unauthorized cloning, re-hosting, or submission to hackathons/competitions under another name is strictly prohibited.*
+
 # 🖼️ AI-Powered Screenshot Organizer
 
 Automatically organize, rename, and index screenshots using OCR and Claude Vision API.
